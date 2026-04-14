@@ -9,6 +9,35 @@ st.title("🔥 Fourier Series Tool ")
 st.caption("Created by Sujith E — Engineering Student Project")
 
 st.markdown("🔗 GitHub: https://github.com/sujith0718-coder")
+st.markdown("## 📘 Input Guide")
+
+with st.expander("Click to see how to use this tool"):
+    st.write("""
+    ### 🔹 Basic Inputs
+    - x, x^2, x^3  
+    - |x|  
+    - sin(x), cos(x), tan(x)  
+    - exp(x), log(x)
+
+    ### 🔹 Special Inputs
+    - square
+    - triangle
+    - sawtooth
+
+    ### 🔹 Piecewise Example
+    np.where(x < 0, -1, 1)
+
+    ### 🔹 Periodic version
+    Use: xp
+    Example:
+    np.where(xp < 0, -1, 1)
+
+    ### 🔹 Examples
+    - x
+    - |x|
+    - sin(x)
+    - square
+    """)
 
 # ---------- INPUT CONVERTER ----------
 def convert_input(expr):
