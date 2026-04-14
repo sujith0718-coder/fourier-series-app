@@ -2,30 +2,15 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 
-st.title("🔥 Fourier Series Tool (Your Project)")
+# ---------- PAGE CONFIG ----------
+st.set_page_config(page_title="Fourier Series Tool", layout="centered")
 
-# ---------- INPUT ----------
-user_expr = st.text_input("Enter function (type help or square, triangle, etc.)")
+st.title("🔥 Fourier Series Tool (Built by Sujith E)")
+st.caption("Created by Sujith E — Engineering Student Project")
 
-# ---------- HELP ----------
-if user_expr.lower() == "help":
-    st.write("""
-### Allowed Inputs:
-- x, x^2, x^3
-- |x|
-- sin(x), cos(x), tan(x)
-- exp(x), log(x)
+st.markdown("🔗 GitHub: https://github.com/your-username")
 
-### Piecewise:
-- np.where(x < 0, -1, 1)
-
-### Predefined:
-- square
-- triangle
-- sawtooth
-""")
-
-# ---------- CONVERT ----------
+# ---------- INPUT CONVERTER ----------
 def convert_input(expr):
     expr = expr.replace("^", "**")
     expr = expr.replace("|x|", "abs(x)")
@@ -44,53 +29,70 @@ def convert_input(expr):
 
     return expr
 
-# ---------- ONLY RUN IF INPUT EXISTS ----------
-if user_expr and user_expr.lower() != "help":
 
-    expr = convert_input(user_expr)
+# ---------- FUNCTION ----------
+def f(x, expr, L):
+    xp = ((x + L) % (2 * L)) - L
+    return eval(expr, {"x": x, "xp": xp, "np": np})
 
-    T = st.number_input("Enter period T", value=6.28)
-    max_N = st.slider("Max N", 1, 20, 10)
-    N = st.slider("Select N (Fourier terms)", 1, max_N, 5)
 
-    L = T / 2
-
-    # ---------- FUNCTION ----------
-    def f(x, expr, L):
-        xp = ((x + L) % (2*L)) - L
-        return eval(expr, {"x": x, "xp": xp, "np": np})
-
-    # ---------- FOURIER ----------
-    def a0(expr, L):
-        x = np.linspace(-L, L, 1000)
-        return (1/(2*L)) * np.trapezoid(f(x, expr, L), x)
-
-    def an(n, expr, L):
-        x = np.linspace(-L, L, 1000)
-        return (1/L) * np.trapezoid(f(x, expr, L)*np.cos(n*np.pi*x/L), x)
-
-    def bn(n, expr, L):
-        x = np.linspace(-L, L, 1000)
-        return (1/L) * np.trapezoid(f(x, expr, L)*np.sin(n*np.pi*x/L), x)
-
-    def fourier_sum(x, N, expr, L):
-        S = a0(expr, L)
-        for n in range(1, N+1):
-            S += an(n, expr, L)*np.cos(n*np.pi*x/L) + bn(n, expr, L)*np.sin(n*np.pi*x/L)
-        return S
-
-    # ---------- DATA ----------
+# ---------- FOURIER ----------
+def a0(expr, L):
     x = np.linspace(-L, L, 1000)
-    fx = f(x, expr, L)
-    approx = fourier_sum(x, N, expr, L)
+    return (1 / (2 * L)) * np.trapz(f(x, expr, L), x)
 
-    # ---------- PLOT ----------
-    fig, ax = plt.subplots()
+def an(n, expr, L):
+    x = np.linspace(-L, L, 1000)
+    return (1 / L) * np.trapz(f(x, expr, L) * np.cos(n * np.pi * x / L), x)
 
-    ax.plot(x, fx, 'k', label="f(x)")
-    ax.plot(x, approx, 'r', label=f"S{N}")
+def bn(n, expr, L):
+    x = np.linspace(-L, L, 1000)
+    return (1 / L) * np.trapz(f(x, expr, L) * np.sin(n * np.pi * x / L), x)
 
+def fourier_sum(x, N, expr, L):
+    S = a0(expr, L)
+    for n in range(1, N + 1):
+        S += an(n, expr, L) * np.cos(n * np.pi * x / L) + bn(n, expr, L) * np.sin(n * np.pi * x / L)
+    return S
+
+
+# ---------- UI CONTROLS ----------
+user_expr = st.text_input("Enter function (square, triangle, x, sin(x), etc.)", "square")
+
+T = st.slider("Period (T)", 1.0, 10.0, 2.0)
+max_N = st.slider("Max Fourier terms (N)", 1, 50, 10)
+
+mode = st.radio("Mode", ["Compare", "Interactive"])
+
+expr = convert_input(user_expr)
+L = T / 2
+
+x = np.linspace(-L, L, 1000)
+fx = f(x, expr, L)
+
+fig, ax = plt.subplots()
+
+# ---------- COMPARE MODE ----------
+if mode == "Compare":
+    ax.plot(x, fx, 'k', label="Original f(x)")
+
+    for n in [1, 2, 3, 5, max_N]:
+        if n <= max_N:
+            ax.plot(x, fourier_sum(x, n, expr, L), label=f"S{n}")
+
+    ax.set_title("Fourier Series Comparison")
     ax.legend()
     ax.grid()
+    st.pyplot(fig)
 
+# ---------- INTERACTIVE MODE ----------
+else:
+    N = st.slider("Choose N", 1, max_N, 1)
+
+    ax.plot(x, fx, 'k', label="Original f(x)")
+    ax.plot(x, fourier_sum(x, N, expr, L), 'r', label=f"S{N}")
+
+    ax.set_title("Fourier Series Approximation")
+    ax.legend()
+    ax.grid()
     st.pyplot(fig)
