@@ -39,15 +39,15 @@ def f(x, expr, L):
 # ---------- FOURIER ----------
 def a0(expr, L):
     x = np.linspace(-L, L, 1000)
-    return (1 / (2 * L)) * np.trapz(f(x, expr, L), x)
+    return (1 / (2 * L)) * np.trapezoid(f(x, expr, L), x)
 
 def an(n, expr, L):
     x = np.linspace(-L, L, 1000)
-    return (1 / L) * np.trapz(f(x, expr, L) * np.cos(n * np.pi * x / L), x)
+    return (1 / L) * np.trapezoid(f(x, expr, L) * np.cos(n * np.pi * x / L), x)
 
 def bn(n, expr, L):
     x = np.linspace(-L, L, 1000)
-    return (1 / L) * np.trapz(f(x, expr, L) * np.sin(n * np.pi * x / L), x)
+    return (1 / L) * np.trapezoid(f(x, expr, L) * np.sin(n * np.pi * x / L), x)
 
 def fourier_sum(x, N, expr, L):
     S = a0(expr, L)
