@@ -5,10 +5,10 @@ import matplotlib.pyplot as plt
 # ---------- PAGE CONFIG ----------
 st.set_page_config(page_title="Fourier Series Tool", layout="centered")
 
-st.title("🔥 Fourier Series Tool (Built by Sujith E)")
+st.title("🔥 Fourier Series Tool ")
 st.caption("Created by Sujith E — Engineering Student Project")
 
-st.markdown("🔗 GitHub: https://github.com/your-username")
+st.markdown("🔗 GitHub: https://github.com/sujith0718-coder")
 
 # ---------- INPUT CONVERTER ----------
 def convert_input(expr):
